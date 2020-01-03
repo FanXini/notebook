@@ -1,0 +1,1 @@
+在bootstrap.js中修改var m_top = ( $(document).height() - $modal_dialog.height() )/3;

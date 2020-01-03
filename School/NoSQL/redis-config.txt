@@ -1,0 +1,220 @@
+# Redis configuration file example.
+
+
+Note that in order to read the configuration file, Redis must be
+
+started with the file path as first argument:
+
+#
+
+./redis-server /path/to/redis.conf
+
+Note on units: when memory size is needed, it is possible to specify
+
+it in the usual form of 1k 5GB 4M and so forth:
+
+#
+
+1k => 1000 bytes
+
+1kb => 1024 bytes
+
+1m => 1000000 bytes
+
+1mb => 1024*1024 bytes
+
+1g => 1000000000 bytes
+
+1gb => 1024*1024*1024 bytes
+
+#
+
+units are case insensitive so 1GB 1Gb 1gB are all the same.
+
+支持引用其他的配置文件
+
+# 
+
+include /path/to/local.conf
+
+include /path/to/other.conf
+
+################################ GENERAL  #####################################
+daemonize yes
+
+pidfile /var/run/redis/redis-server.pid
+
+port 6379
+
+tcp-backlog 511
+
+# bind 192.168.1.100 10.0.0.1 支持绑定多个ip地址
+bind 127.0.0.1
+
+#支持通过unix socket方式来接收请求。可以通过unixsocket配置项来指定unix socket文件的路径，并通过unixsocketperm来指定文件的权限
+# unixsocket /var/run/redis/redis.sock
+# unixsocketperm 700
+
+timeout 0
+
+tcp-keepalive 0
+
+loglevel notice
+
+#日志文件存储位置
+logfile /var/log/redis/redis-server.log
+
+#支持将日志打印到Syslog中
+
+To enable logging to the system logger, just set 'syslog-enabled' to yes,
+
+and optionally update the other syslog parameters to suit your needs.
+
+syslog-enabled no
+
+Specify the syslog identity.
+
+syslog-ident redis
+
+Specify the syslog facility. Must be USER or between LOCAL0-LOCAL7.
+
+syslog-facility local0
+
+# 
+
+databases 16
+
+
+
+
+################################ SNAPSHOTTING 快照 ################################
+#格式 ：save <seconds> <changes>
+save 900 1 //表示每15分钟且至少有1个key改变，就触发一次持久化
+save 300 10 //表示每5分钟且至少有10个key改变，就触发一次持久化
+save 60 10000 //表示每60秒至少有10000个key改变，就触发一次持久化
+
+stop-writes-on-bgsave-error yes
+
+rdbcompression yes
+
+rdbchecksum yes
+
+dbfilename dump.rdb
+
+#快照文件存储位置
+dir /var/lib/redis
+
+################################# REPLICATION 复制#################################
+#redis提供了主从同步功能。
+#通过slaveof配置项可以控制某一个redis作为另一个redis的从服务器，通过指定IP和端口来定位到主redis的位置。
+#一般情况下，我们会建议用户为从redis设置一个不同频率的快照持久化的周期，或者为从redis配置一个不同的服务端口等等。
+slaveof <masterip> <masterport>
+
+#设置主redis验证密码
+masterauth <master-password>
+
+slave-serve-stale-data yes
+
+slave-read-only yes
+
+repl-diskless-sync no
+
+repl-diskless-sync-delay 5
+
+repl-ping-slave-period 10
+
+repl-timeout 60
+
+repl-disable-tcp-nodelay no
+
+repl-backlog-size 1mb
+
+repl-backlog-ttl 3600
+
+slave-priority 100
+
+min-slaves-to-write 3
+min-slaves-max-lag 10
+
+################################## SECURITY  安全###################################
+
+requirepass zhimakaimen
+
+rename-command CONFIG b840fc02d524045429941cc15f59e41cb7be6c89
+
+rename-command CONFIG ""
+
+################################## LIMITS 限制####################################
+
+maxclients 10000
+
+maxmemory <bytes>
+
+maxmemory-policy noeviction
+
+maxmemory-samples 5
+
+############################## APPEND ONLY MODE  追加###############################
+
+appendonly no
+
+appendfilename "appendonly.aof"
+
+appendfsync everysec
+
+no-appendfsync-on-rewrite no
+
+auto-aof-rewrite-percentage 100
+auto-aof-rewrite-min-size 64mb
+
+aof-load-truncated yes
+
+################################ LUA SCRIPTING LUA 脚本  ###############################
+lua-time-limit 5000
+
+################################ REDIS CLUSTER  集群###############################
+
+cluster-enabled yes
+
+cluster-config-file nodes-6379.conf
+
+cluster-node-timeout 15000
+
+cluster-slave-validity-factor 10
+
+cluster-migration-barrier 1
+
+cluster-require-full-coverage yes
+
+################################## SLOW LOG 慢日志###################################
+
+slowlog-log-slower-than 10000
+
+################################ LATENCY MONITOR ##############################
+
+latency-monitor-threshold 0
+
+############################# EVENT NOTIFICATION 事件通知 ##############################
+
+notify-keyspace-events ""
+
+############################### ADVANCED CONFIG 高级配置 ###############################
+
+hash-max-ziplist-entries 512
+hash-max-ziplist-value 64
+
+list-max-ziplist-entries 512
+list-max-ziplist-value 64
+
+set-max-intset-entries 512
+
+zset-max-ziplist-entries 128
+zset-max-ziplist-value 64
+
+activerehashing yes
+
+client-output-buffer-limit normal 0 0 0
+client-output-buffer-limit slave 256mb 64mb 60
+client-output-buffer-limit pubsub 32mb 8mb 60
+
+slowlog-max-len 128
